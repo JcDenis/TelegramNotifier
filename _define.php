@@ -20,7 +20,7 @@ $this->registerModule(
     '0.1',
     [
         'requires'    => [['core', '2.33']],
-        'settings'    => ['self'],
+        'settings'    => ['pref' => '#user-options.' . $this->id . 'prefs'],
         'permissions' => 'My',
         'type'        => 'plugin',
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
