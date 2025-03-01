@@ -26,6 +26,6 @@ $this->registerModule(
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
         'details'     => 'https://github.com/JcDenis/' . $this->id . '/src/branch/master/README.md',
         'repository'  => 'https://github.com/JcDenis/' . $this->id . '/raw/branch/master/dcstore.xml',
-        'date'        => '2025-03-01T10:02:25+00:00',
+        'date'        => '2025-03-01T16:22:20+00:00',
     ]
 );
