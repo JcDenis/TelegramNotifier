@@ -31,6 +31,11 @@ class TelegramUser
     private array $actions = [];
 
     /**
+     * User is admin on current blog.
+     */
+    private bool $admin = false;
+
+    /**
      * Create a new user instance.
      */
 	public function __construct(
@@ -61,6 +66,10 @@ class TelegramUser
                     }
                 }
             }
+
+            // Check if user is (super)admin on current blog
+            $rs = App::users()->getUser($this->user);
+            $this->admin = !$rs->isEmpty() && $rs->admin() !== '';
         }
 	}
 
@@ -71,6 +80,21 @@ class TelegramUser
 	{
 		return !empty($this->user) && !empty($this->chat) && !empty($this->token);
 	}
+
+    /**
+     * Check if user has a given permission on blog.
+     */
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->admin) {
+            return true;
+        }
+
+        $blogs = App::users()->getUserPermissions($this->user);
+
+        // user has (no) permissions on blog
+        return isset($blogs[App::blog()->id()]['p']) && !empty($blogs[App::blog()->id()]['p'][$permission]);
+    }
 
     /**
      * Get current user configuration form.

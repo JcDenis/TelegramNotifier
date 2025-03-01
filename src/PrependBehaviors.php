@@ -28,7 +28,13 @@ class PrependBehaviors
                 id: My::id() . 'CommentCreate',
                 type: 'message',
                 name: __('New comment'),
-                description: __('Send message on new comment')
+                description: __('Send message on new comment'),
+                permissions: App::auth()->makePermissions([
+                    App::auth()::PERMISSION_CONTENT_ADMIN,
+                    App::auth()::PERMISSION_USAGE,
+                    App::auth()::PERMISSION_PUBLISH,
+                    App::auth()::PERMISSION_DELETE,
+                ])
             ),
             // ...
         ]);

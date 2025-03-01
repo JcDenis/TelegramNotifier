@@ -29,12 +29,38 @@ class TelegramAction
         public readonly string $id,
         public readonly string $type,
         public readonly string $name,
-        public readonly string $description
+        public readonly string $description,
+        public readonly string $permissions = ''
     ) {
         if (!in_array($this->type, Telegram::SUPPORTED_TYPES)) {
             throw new Exception(__('Unsupported Telegram message type.'));
         }
 	}
+
+    /**
+     * Check user permissions for this action.
+     */
+    public function checkUser(TelegramUser $user, bool $logged = false): bool
+    {
+        // no permissions required
+        if (empty($this->permissions)) {
+            return true;
+        }
+
+        // user must be logged
+        if ($logged && App::auth()->userID() != $user->user) {
+            return false;
+        }
+
+        // user has required persmission
+        foreach(explode(',', $this->permissions) as $permission) {
+            if ($user->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Get all configured users that have action selected.
@@ -61,7 +87,7 @@ class TelegramAction
             while ($rs->fetch()) {
                 $user = TelegramUser::newFromUser((string) $rs->f('user_id'));
                 // Get only configured users
-                if ($user->isConfigured()) {
+                if ($user->isConfigured() && $this->checkUser($user)) {
                     $res[] = $user;
                 }
             }
@@ -75,7 +101,7 @@ class TelegramAction
      */
     public function getForm(TelegramUser $user): Para
     {
-        if (App::auth()->userID() == $user->user) {
+        if ($this->checkUser($user, true)) {
             return (new Para())->items([
                 (new Checkbox(My::id() . $this->id, $user->hasAction($this->id)))
                     ->value('1')
@@ -91,7 +117,7 @@ class TelegramAction
      */
     public function setForm(TelegramUser $user): void
     {
-        if (App::auth()->userID() == $user->user) {
+        if ($this->checkUser($user, true)) {
             My::prefs()->put($this->id, !empty($_POST[My::id() . $this->id]), UserWorkspaceInterface::WS_BOOL);
         }
     }
