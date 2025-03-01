@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\TelegramNotifier;
 
 use Dotclear\App;
+use Dotclear\Core\Backend\Notices;
 use Dotclear\Helper\Html\Form\Div;
 use Dotclear\Helper\Html\Form\Fieldset;
 use Dotclear\Helper\Html\Form\Legend;
@@ -40,7 +41,7 @@ class BackendBehaviors
             }
 
         } catch (Exception $e) {
-            App::error()->add($e->getMessage());
+            Notices::addWarningNotice(__('Failed to configure Telegram'));
         }
     }
 

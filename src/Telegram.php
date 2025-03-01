@@ -159,7 +159,7 @@ class Telegram
      * 
      * @param   array<string, mixed>    $data
 	 */
-	private function query(TelegramUser $user, string $endpoint, array $data): void
+	public function query(TelegramUser $user, string $endpoint, array $data): bool
 	{
         $data['chat_id'] = $user->chat;
         if ($this->format != '') {
@@ -173,26 +173,25 @@ class Telegram
             // init bot API
             $client = HttpClient::initClient($url, $path);
             if ($client === false) {
-                throw new Exception (__('Failed to init API'));
+                throw new Exception (__('Failed to init Telegram API'));
             }
 
             // call bot API
             $client->post($path, $data);
 
-            // wrong url
-            if ($client->getStatus() !== 200) {
-                throw new Exception(__('Failed to call API'));
-            }
-
             // get bot API response
             $rsp = json_decode($client->getContent(), true);
             if (!isset($rsp['ok']) || !$rsp['ok']) {
-                throw new Exception($rsp['description'] ?? __('An error occured'));
+                throw new Exception($rsp['description'] ?? __('Failed to call Telegram API'));
             }
         } catch (Exception $e) {
             if (App::config()->debugMode()) {
                 throw $e;
             }
+
+            return false;
         }
+
+        return true;
 	}
 }

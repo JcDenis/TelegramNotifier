@@ -12,6 +12,7 @@ use Dotclear\Helper\Html\Form\Label;
 use Dotclear\Helper\Html\Form\Para;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Interface\Core\UserWorkspaceInterface;
+use Exception;
 
 /**
  * @brief       TelegramNotifier user handler.
@@ -110,8 +111,25 @@ class TelegramUser
     public function setForm(): void
     {
         if (App::auth()->userID() == $this->user) {
-            My::prefs()->put('chat', (int) $_POST[My::id() . 'chat'] ?: 0, UserWorkspaceInterface::WS_INT);
-            My::prefs()->put('token', (string) $_POST[My::id() . 'token'] ?: '', UserWorkspaceInterface::WS_STRING);
+            $chat = (int) $_POST[My::id() . 'chat'] ?: 0;
+            $token = (string) $_POST[My::id() . 'token'] ?: '';
+
+            if ($chat != $this->chat || $token != $this->token) {
+                // Test config
+                try {
+                    $user = new self($this->user, $chat, $token);
+                    $telegram = new Telegram();
+                    if ($telegram->query($user, 'getChat', ['chat_id' => $chat]) !== true) {pdump('e');
+                        throw new Exception(__('Bad Telegram configuration'));
+                    }
+
+                    // Save config
+                    My::prefs()->put('chat', $chat, UserWorkspaceInterface::WS_INT);
+                    My::prefs()->put('token', $token, UserWorkspaceInterface::WS_STRING);
+                } catch (Exception $e) {
+                    throw $e;
+                }
+            }
         }
     }
 
