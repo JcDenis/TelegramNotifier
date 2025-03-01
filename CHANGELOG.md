@@ -1,4 +1,16 @@
-TelegramNotifier 0.1
+TelegramNotifier 0.3 - 2025.03.01
+===========================================================
+* Require Dotclear 2.33
+* Require PHP 8.1+
+* Add action permissions
+
+TelegramNotifier 0.2 - 2025.03.01
+===========================================================
+* Require Dotclear 2.33
+* Require PHP 8.1+
+* Various fixes
+
+TelegramNotifier 0.1 - 2025.03.01
 ===========================================================
 * Require Dotclear 2.33
 * Require PHP 8.1+
