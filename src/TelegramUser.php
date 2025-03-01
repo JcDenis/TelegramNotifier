@@ -111,16 +111,18 @@ class TelegramUser
     public function setForm(): void
     {
         if (App::auth()->userID() == $this->user) {
-            $chat = (int) $_POST[My::id() . 'chat'] ?: 0;
+            $chat  = (int) $_POST[My::id() . 'chat'] ?: 0;
             $token = (string) $_POST[My::id() . 'token'] ?: '';
 
             if ($chat != $this->chat || $token != $this->token) {
-                // Test config
                 try {
-                    $user = new self($this->user, $chat, $token);
-                    $telegram = new Telegram();
-                    if ($telegram->query($user, 'getChat', ['chat_id' => $chat]) !== true) {pdump('e');
-                        throw new Exception(__('Bad Telegram configuration'));
+                    // Test config
+                    if (!empty($chat) && !empty($token)) {
+                        $user = new self($this->user, $chat, $token);
+                        $telegram = new Telegram();
+                        if ($telegram->query($user, 'getChat', ['chat_id' => $chat]) !== true) {pdump('e');
+                            throw new Exception(__('Bad Telegram configuration'));
+                        }
                     }
 
                     // Save config
