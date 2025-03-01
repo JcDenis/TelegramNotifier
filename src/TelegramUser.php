@@ -144,7 +144,7 @@ class TelegramUser
                     if (!empty($chat) && !empty($token)) {
                         $user = new self($this->user, $chat, $token);
                         $telegram = new Telegram();
-                        if ($telegram->query($user, 'getChat', ['chat_id' => $chat]) !== true) {pdump('e');
+                        if ($telegram->query($user, 'getChat', ['chat_id' => $chat]) !== true) {
                             throw new Exception(__('Bad Telegram configuration'));
                         }
                     }
