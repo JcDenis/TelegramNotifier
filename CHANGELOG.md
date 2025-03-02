@@ -1,3 +1,9 @@
+TelegramNotifier 0.3.1 - 2025.03.02
+===========================================================
+* Require Dotclear 2.33
+* Require PHP 8.1+
+* Fix repository URLs
+
 TelegramNotifier 0.3 - 2025.03.01
 ===========================================================
 * Require Dotclear 2.33
