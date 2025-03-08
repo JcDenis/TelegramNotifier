@@ -27,8 +27,6 @@ class Backend extends Process
             return false;
         }
 
-        My::addBackendMenuItem();
-
         App::behavior()->addBehaviors([
             'adminBeforeUserOptionsUpdate' => BackendBehaviors::adminBeforeUserUpdate(...),
             'adminPreferencesFormV2'       => BackendBehaviors::adminPreferencesForm(...),
