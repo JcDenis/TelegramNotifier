@@ -2,12 +2,12 @@
 <modules xmlns:da="http://dotaddict.org/da/">
   <module id="TelegramNotifier">
     <name>Telegram notifier</name>
-    <version>0.4</version>
-    <date>2025-05-11T16:39:39+00:00</date>
+    <version>0.5</version>
+    <date>2025-09-11T20:04:48+00:00</date>
     <author>Jean-Christian Paul Denis and contributors</author>
     <desc>Receive blog updates on Telegram.</desc>
-    <file>https://github.com/JcDenis/TelegramNotifier/releases/download/v0.4/plugin-TelegramNotifier.zip</file>
-    <da:dcmin>2.33</da:dcmin>
+    <file>https://github.com/JcDenis/TelegramNotifier/releases/download/v0.5/plugin-TelegramNotifier.zip</file>
+    <da:dcmin>2.36</da:dcmin>
     <da:details>https://github.com/JcDenis/TelegramNotifier/src/branch/master/README.md</da:details>
     <da:support>https://github.com/JcDenis/TelegramNotifier/issues</da:support>
   </module>
