@@ -6,7 +6,7 @@
  *
  * @defgroup    TelegramNotifier Plugin cinecturlink2.
  *
- * Allow session on frontend.
+ * Receive blog updates on Telegram.
  *
  * @author      Jean-Christian Paul Denis
  * @copyright   AGPL-3.0
@@ -17,10 +17,10 @@ $this->registerModule(
     'Telegram Notifier',
     'Receive blog updates on Telegram.',
     'Jean-Christian Paul Denis and Contributors',
-    '0.4',
+    '0.5',
     [
-        'requires'    => [['core', '2.33']],
-        'settings'    => ['pref' => '#user-options.' . $this->id . 'prefs'],
+        'requires'    => [['core', '2.36']],
+        'settings'    => ['pref' => '#user-options.' . $this->id . '_prefs'],
         'permissions' => 'My',
         'type'        => 'plugin',
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',

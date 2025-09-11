@@ -1,3 +1,8 @@
+TelegramNotifier 0.5 - 2025.09.11
+===========================================================
+* Bump Dotclear from 2.33 to 2.36
+* Code review
+
 TelegramNotifier 0.4 - 2025.05.11
 ===========================================================
 * Remove unsed admin mneu
