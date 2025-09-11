@@ -75,7 +75,7 @@ class Telegram
     public function addActions(array $actions): void
     {
         foreach($actions as $action) {
-            if (is_a($action, TelegramAction::CLASS)) {
+            if (is_a($action, TelegramAction::CLASS)) { // @phpstan-ignore-line
                 $this->actions[$action->id] = $action;
             }
         }

@@ -76,7 +76,7 @@ class TelegramAction
                 'user_id',
                 'pref_value',
             ])
-            ->from(App::con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
+            ->from(App::db()->con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
             ->and('pref_ws = ' . $sql->quote(My::id()))
             ->and('pref_id = ' . $sql->quote($this->id))
             ->where('user_id IS NOT NULL');

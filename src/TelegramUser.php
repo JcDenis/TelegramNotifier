@@ -51,7 +51,7 @@ class TelegramUser
                     'pref_id',
                     'pref_value',
                 ])
-                ->from(App::con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
+                ->from(App::db()->con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
                 ->and('pref_ws = ' . $sql->quote(My::id()))
                 ->where('user_id = ' . $sql->quote($this->user));
 
@@ -180,7 +180,7 @@ class TelegramUser
                 'pref_value',
                 'pref_type',
             ])
-            ->from(App::con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
+            ->from(App::db()->con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
             ->and('pref_ws = ' . $sql->quote(My::id()))
             ->where('user_id = ' . $sql->quote($user_id));
 
@@ -207,6 +207,9 @@ class TelegramUser
             }
         }
 
-        return new self($user_id, $res['chat'] ?? 0, $res['token'] ?? '');
+        $chat  = isset($res['chat']) && is_numeric($res['chat']) ? (int) $res['chat'] : 0;
+        $token = isset($res['token']) && is_string($res['token']) ? $res['token'] : '';
+
+        return new self($user_id, $chat, $token);
     }
 }

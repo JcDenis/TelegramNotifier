@@ -8,6 +8,7 @@ use Dotclear\App;
 use Dotclear\Core\Backend\Notices;
 use Dotclear\Helper\Html\Form\Div;
 use Dotclear\Helper\Html\Form\Fieldset;
+use Dotclear\Helper\Html\Form\Img;
 use Dotclear\Helper\Html\Form\Legend;
 use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
@@ -61,12 +62,12 @@ class BackendBehaviors
         }
 
         echo (new Fieldset())
-            ->id(My::id() . 'prefs')
-            ->legend(new Legend(My::name()))
+            ->id(My::id() . '_prefs')
+            ->legend(new Legend((new Img(My::icons()[0]))->class('icon-small')->render() . ' ' . My::name()))
             ->fields([
                 (new Div())
                     ->items([
-                        (new Text('h5', __('Configuration:'))),
+                        (new Text('h5', __('Account:'))),
                         ... $user->getForm(),
                     ]),
                 (new Div())
