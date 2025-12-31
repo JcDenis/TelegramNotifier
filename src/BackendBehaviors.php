@@ -11,7 +11,6 @@ use Dotclear\Helper\Html\Form\Fieldset;
 use Dotclear\Helper\Html\Form\Img;
 use Dotclear\Helper\Html\Form\Legend;
 use Dotclear\Helper\Html\Form\Text;
-use Dotclear\Helper\Html\Html;
 use Exception;
 
 /**
@@ -37,11 +36,10 @@ class BackendBehaviors
             $user->setForm();
 
             // Save user actions
-            foreach($actions->getActions() as $action) {
+            foreach ($actions->getActions() as $action) {
                 $action->setForm($user);
             }
-
-        } catch (Exception $e) {
+        } catch (Exception) {
             Notices::addWarningNotice(__('Failed to configure Telegram'));
         }
     }
@@ -56,8 +54,8 @@ class BackendBehaviors
 
         $odd   = 1;
         $items = [0 => [], 1 => []];
-        foreach($actions->getActions() as $action) {
-            $odd           = $odd ? 0 : 1;
+        foreach ($actions->getActions() as $action) {
+            $odd           = $odd !== 0 ? 0 : 1;
             $items[$odd][] = $action->getForm($user);
         }
 

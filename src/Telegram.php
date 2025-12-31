@@ -25,12 +25,12 @@ class Telegram
         'token',
     ];
 
-	/**
-	 * Supported telegram message type.
-	 */
-	public const SUPPORTED_TYPES = [
-		'message',
-	];
+    /**
+     * Supported telegram message type.
+     */
+    public const SUPPORTED_TYPES = [
+        'message',
+    ];
 
     /**
      * Telegram bot APIURL.
@@ -44,10 +44,10 @@ class Telegram
      */
     private array $actions = [];
 
-   	/**
-   	 * Current action.
-   	 */
-	private TelegramAction|false $action;
+    /**
+     * Current action.
+     */
+    private TelegramAction|false $action;
 
     /**
      * Current message content.
@@ -59,13 +59,13 @@ class Telegram
      */
     private string $format = '';
 
-	/**
-	 * Create a new telegram instance.
-	 */
-	public function __construct()
-	{
+    /**
+     * Create a new telegram instance.
+     */
+    public function __construct()
+    {
         App::behavior()->callBehavior(My::id() . 'AddActions', $this);
-	}
+    }
 
     /**
      * Register actions.
@@ -74,8 +74,8 @@ class Telegram
      */
     public function addActions(array $actions): void
     {
-        foreach($actions as $action) {
-            if (is_a($action, TelegramAction::CLASS)) { // @phpstan-ignore-line
+        foreach ($actions as $action) {
+            if ($action instanceof TelegramAction) {
                 $this->actions[$action->id] = $action;
             }
         }
@@ -102,12 +102,12 @@ class Telegram
     /**
      * Set current telegram action.
      */
-	public function setAction(string $id): self
-	{
-		$this->action = $this->getAction($id);
+    public function setAction(string $id): self
+    {
+        $this->action = $this->getAction($id);
 
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * Set current telegram content format.
@@ -129,40 +129,36 @@ class Telegram
         return $this;
     }
 
-	/**
-	 * Send telegram.
-	 */
-	public function send(): void
-	{
-		if (!$this->action) {
-			return;
-		}
+    /**
+     * Send telegram.
+     */
+    public function send(): void
+    {
+        if (!$this->action) {
+            return;
+        }
 
         $data = [];
 
-		switch ($this->action->type) {
-			case 'message':
-                if (!empty($this->content)) {
-                    foreach($this->action->getUsers() as $user) {
-                        $data['text'] = $this->content;
-                        $this->query($user, 'sendMessage', $data);
-                    }
-                }
-				break;
-		}
-	}
+        if ($this->action->type === 'message' && $this->content !== '') {
+            foreach ($this->action->getUsers() as $user) {
+                $data['text'] = $this->content;
+                $this->query($user, 'sendMessage', $data);
+            }
+        }
+    }
 
-	/**
-	 * Send a telegram message.
-     * 
+    /**
+     * Send a telegram message.
+     *
      * @see https://core.telegram.org/bots/api#responseparameters
-     * 
+     *
      * @param   array<string, mixed>    $data
-	 */
-	public function query(TelegramUser $user, string $endpoint, array $data): bool
-	{
+     */
+    public function query(TelegramUser $user, string $endpoint, array $data): bool
+    {
         $data['chat_id'] = $user->chat;
-        if ($this->format != '') {
+        if ($this->format !== '') {
             $data['parse_mode'] = $this->format;
         }
 
@@ -173,14 +169,14 @@ class Telegram
             // init bot API
             $client = HttpClient::initClient($url, $path);
             if ($client === false) {
-                throw new Exception (__('Failed to init Telegram API'));
+                throw new Exception(__('Failed to init Telegram API'));
             }
 
             // call bot API
             $client->post($path, $data);
 
             // get bot API response
-            $rsp = json_decode($client->getContent(), true);
+            $rsp = json_decode((string) $client->getContent(), true);
             if (!isset($rsp['ok']) || !$rsp['ok']) {
                 throw new Exception($rsp['description'] ?? __('Failed to call Telegram API'));
             }
@@ -193,5 +189,5 @@ class Telegram
         }
 
         return true;
-	}
+    }
 }
