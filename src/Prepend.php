@@ -33,6 +33,8 @@ class Prepend
         App::behavior()->addBehaviors([
             My::id() . 'AddActions'    => PrependBehaviors::AddActions(...),
             'publicAfterCommentCreate' => PrependBehaviors::publicAfterCommentCreate(...),
+        ]);
+        App::behavior()->addBehaviors([
             'publicAfterCommentCreate' => PrependBehaviors::publicAfterCommentCreateNotMe(...),
         ]);
 
