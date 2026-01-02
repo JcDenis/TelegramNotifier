@@ -25,7 +25,7 @@ class TelegramAction
     /**
      * Create a new action instance.
      */
-	public function __construct(
+    public function __construct(
         public readonly string $id,
         public readonly string $type,
         public readonly string $name,
@@ -35,7 +35,7 @@ class TelegramAction
         if (!in_array($this->type, Telegram::SUPPORTED_TYPES)) {
             throw new Exception(__('Unsupported Telegram message type.'));
         }
-	}
+    }
 
     /**
      * Check user permissions for this action.
@@ -43,7 +43,7 @@ class TelegramAction
     public function checkUser(TelegramUser $user, bool $logged = false): bool
     {
         // no permissions required
-        if (empty($this->permissions)) {
+        if ($this->permissions === '') {
             return true;
         }
 
@@ -53,7 +53,7 @@ class TelegramAction
         }
 
         // user has required persmission
-        foreach(explode(',', $this->permissions) as $permission) {
+        foreach (explode(',', $this->permissions) as $permission) {
             if ($user->hasPermission($permission)) {
                 return true;
             }

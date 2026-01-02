@@ -38,11 +38,11 @@ class TelegramUser
     /**
      * Create a new user instance.
      */
-	public function __construct(
-		public readonly string $user = '',
-		public readonly int $chat = 0,
-		public readonly string $token = ''
-	) {
+    public function __construct(
+        public readonly string $user = '',
+        public readonly int $chat = 0,
+        public readonly string $token = ''
+    ) {
         if ($this->isConfigured()) {
             // Get user selected actions
             $sql = new SelectStatement();
@@ -59,27 +59,25 @@ class TelegramUser
 
             if ($rs instanceof MetaRecord) {
                 while ($rs->fetch()) {
-                    if (!in_array($rs->f('pref_id'), Telegram::CONFIGURATION_KEYS)) {
-                        if ((bool) $rs->f('pref_value')) {
-                            $this->actions[] = trim((string) $rs->f('pref_id'));
-                        }
+                    if (!in_array($rs->f('pref_id'), Telegram::CONFIGURATION_KEYS) && (bool) $rs->f('pref_value')) {
+                        $this->actions[] = trim((string) $rs->f('pref_id'));
                     }
                 }
             }
 
             // Check if user is (super)admin on current blog
-            $rs = App::users()->getUser($this->user);
+            $rs          = App::users()->getUser($this->user);
             $this->admin = !$rs->isEmpty() && $rs->admin() !== '';
         }
-	}
+    }
 
     /**
      * Check if configuration is not empty.
      */
-	public function isConfigured(): bool
-	{
-		return !empty($this->user) && !empty($this->chat) && !empty($this->token);
-	}
+    public function isConfigured(): bool
+    {
+        return $this->user !== '' && $this->chat !== 0 && $this->token !== '';
+    }
 
     /**
      * Check if user has a given permission on blog.
@@ -112,7 +110,7 @@ class TelegramUser
                             ->size(60)
                             ->maxlength(255)
                             ->value(Html::escapeHTML((string) $this->chat))
-                            ->label(new Label(__('Telegram chat ID:'), Label::INSIDE_TEXT_BEFORE))
+                            ->label(new Label(__('Telegram chat ID:'), Label::INSIDE_TEXT_BEFORE)),
                     ]),
                 (new Para())
                     ->class('field')
@@ -120,10 +118,10 @@ class TelegramUser
                         (new Input(My::id() . 'token'))
                             ->size(60)
                             ->maxlength(255)
-                            ->value(Html::escapeHTML((string) $this->token))
-                            ->label(new Label(__('Telegram bot token:'), Label::INSIDE_TEXT_BEFORE))
+                            ->value(Html::escapeHTML($this->token))
+                            ->label(new Label(__('Telegram bot token:'), Label::INSIDE_TEXT_BEFORE)),
                     ]),
-                ];
+            ];
         }
 
         return [];
@@ -138,23 +136,19 @@ class TelegramUser
             $chat  = (int) $_POST[My::id() . 'chat'] ?: 0;
             $token = (string) $_POST[My::id() . 'token'] ?: '';
 
-            if ($chat != $this->chat || $token != $this->token) {
-                try {
-                    // Test config
-                    if (!empty($chat) && !empty($token)) {
-                        $user = new self($this->user, $chat, $token);
-                        $telegram = new Telegram();
-                        if ($telegram->query($user, 'getChat', ['chat_id' => $chat]) !== true) {
-                            throw new Exception(__('Bad Telegram configuration'));
-                        }
+            if ($chat !== $this->chat || $token !== $this->token) {
+                // Test config
+                if ($chat !== 0 && $token !== '') {
+                    $user     = new self($this->user, $chat, $token);
+                    $telegram = new Telegram();
+                    if (!$telegram->query($user, 'getChat', ['chat_id' => $chat])) {
+                        throw new Exception(__('Bad Telegram configuration'));
                     }
-
-                    // Save config
-                    My::prefs()->put('chat', $chat, UserWorkspaceInterface::WS_INT);
-                    My::prefs()->put('token', $token, UserWorkspaceInterface::WS_STRING);
-                } catch (Exception $e) {
-                    throw $e;
                 }
+
+                // Save config
+                My::prefs()->put('chat', $chat, UserWorkspaceInterface::WS_INT);
+                My::prefs()->put('token', $token, UserWorkspaceInterface::WS_STRING);
             }
         }
     }
@@ -207,7 +201,7 @@ class TelegramUser
             }
         }
 
-        $chat  = isset($res['chat']) && is_numeric($res['chat']) ? (int) $res['chat'] : 0;
+        $chat  = isset($res['chat'])  && is_numeric($res['chat']) ? (int) $res['chat'] : 0;
         $token = isset($res['token']) && is_string($res['token']) ? $res['token'] : '';
 
         return new self($user_id, $chat, $token);
