@@ -36,6 +36,13 @@ class TelegramUser
     private bool $admin = false;
 
     /**
+     * User email.
+     *
+     * @var array<array-key, string>
+     */
+    private array $emails = [];
+
+    /**
      * Create a new user instance.
      */
     public function __construct(
@@ -66,8 +73,21 @@ class TelegramUser
             }
 
             // Check if user is (super)admin on current blog
-            $rs          = App::users()->getUser($this->user);
-            $this->admin = !$rs->isEmpty() && $rs->admin() !== '';
+            $rs = App::users()->getUser($this->user);
+
+            if (!$rs->isEmpty()) {
+                $this->admin = $rs->admin() !== '';
+
+                // Get all possible user emails
+                $this->emails[] = $rs->user_email;
+                $user_prefs     = App::userPreferences()->createFromUser((string) $rs->user_id, 'profile');
+                if ((string) $user_prefs->profile->mails !== '') {
+                    $emails = array_map(trim(...), explode(',', (string) $user_prefs->profile->mails));
+                    if ($emails !== []) {
+                        $this->emails = array_merge($this->emails, $emails);
+                    }
+                }
+            }
         }
     }
 
@@ -92,6 +112,16 @@ class TelegramUser
 
         // user has (no) permissions on blog
         return isset($blogs[App::blog()->id()]['p']) && !empty($blogs[App::blog()->id()]['p'][$permission]);
+    }
+
+    /**
+     * Get user emails
+     *
+     * @return array<array-key, string>
+     */
+    public function getEmails(): array
+    {
+        return $this->emails;
     }
 
     /**

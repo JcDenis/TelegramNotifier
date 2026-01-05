@@ -60,6 +60,11 @@ class Telegram
     private string $format = '';
 
     /**
+     * Current origin of action.
+     */
+    private string $origin = '';
+
+    /**
      * Create a new telegram instance.
      */
     public function __construct()
@@ -130,6 +135,16 @@ class Telegram
     }
 
     /**
+     * Set current telegram origin.
+     */
+    public function setOrigin(string $origin): self
+    {
+        $this->origin = $origin;
+
+        return $this;
+    }
+
+    /**
      * Send telegram.
      */
     public function send(): void
@@ -142,6 +157,11 @@ class Telegram
 
         if ($this->action->type === 'message' && $this->content !== '') {
             foreach ($this->action->getUsers() as $user) {
+                // If action has a condition, check it
+                if (is_callable($this->action->condition) && !call_user_func($this->action->condition, $user, $this->origin)) {
+                    continue;
+                }
+
                 $data['text'] = $this->content;
                 $this->query($user, 'sendMessage', $data);
             }
