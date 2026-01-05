@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dotclear 2 TelegramNotifier module\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-31 08:53+0100\n"
+"POT-Creation-Date: 2026-01-05 11:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgid "Send telegram on:"
 msgstr ""
 
 #: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:29
-#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:81
+#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:78
 msgid "New comment"
 msgstr ""
 
@@ -38,48 +38,48 @@ msgid "Send message on new comment"
 msgstr ""
 
 #: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:42
-msgid "New comment (not from post author)"
+msgid "New comment (not from me)"
 msgstr ""
 
 #: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:43
-msgid "Send message on new comment (if not from the post author)"
+msgid "Send message on new comment (if not from me)"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:83
+#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:80
 #, php-format
 msgid "*Blog:* %s"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:84
+#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:81
 #, php-format
 msgid "*Entry:* [%s](%s)"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:85
+#: ../git-plugins/TelegramNotifier/src/PrependBehaviors.php:82
 #, php-format
 msgid "*Comment by:* %s <%s>"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/Telegram.php:172
+#: ../git-plugins/TelegramNotifier/src/Telegram.php:192
 msgid "Failed to init Telegram API"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/Telegram.php:181
+#: ../git-plugins/TelegramNotifier/src/Telegram.php:201
 msgid "Failed to call Telegram API"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/TelegramAction.php:36
+#: ../git-plugins/TelegramNotifier/src/TelegramAction.php:37
 msgid "Unsupported Telegram message type."
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/TelegramUser.php:113
+#: ../git-plugins/TelegramNotifier/src/TelegramUser.php:143
 msgid "Telegram chat ID:"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/TelegramUser.php:122
+#: ../git-plugins/TelegramNotifier/src/TelegramUser.php:152
 msgid "Telegram bot token:"
 msgstr ""
 
-#: ../git-plugins/TelegramNotifier/src/TelegramUser.php:145
+#: ../git-plugins/TelegramNotifier/src/TelegramUser.php:175
 msgid "Bad Telegram configuration"
 msgstr ""

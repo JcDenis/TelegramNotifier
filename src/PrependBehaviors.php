@@ -39,23 +39,23 @@ class PrependBehaviors
             new TelegramAction(
                 id: My::id() . 'CommentCreateNotMe',
                 type: 'message',
-                name: __('New comment (not from post author)'),
-                description: __('Send message on new comment (if not from the post author)'),
+                name: __('New comment (not from me)'),
+                description: __('Send message on new comment (if not from me)'),
                 permissions: App::auth()->makePermissions([
                     App::auth()::PERMISSION_CONTENT_ADMIN,
                     App::auth()::PERMISSION_USAGE,
                     App::auth()::PERMISSION_PUBLISH,
                     App::auth()::PERMISSION_DELETE,
-                ])
+                ]),
+                condition: fn (TelegramUser $user, string $origin): bool => !in_array($origin, $user->getEmails())
             ),
-            // ...
         ]);
     }
 
     /**
      * Message on comment creation.
      */
-    public static function publicAfterCommentCreateHelper(Cursor $cur, ?int $comment_id, bool $not_me = false): void
+    public static function publicAfterCommentCreate(Cursor $cur, ?int $comment_id): void
     {
         // skip unwanted message
         if (!App::blog()->isDefined() || (int) $cur->getField('comment_status') === App::status()->comment()::JUNK) {
@@ -74,9 +74,6 @@ class PrependBehaviors
         if (is_null($rs) || $rs->isEmpty()) {
             return;
         }
-        if ($not_me && $rs->isMe()) {
-            return;
-        }
 
         $message = sprintf('*%s*', __('New comment')) . "\n" .
         "-- \n" .
@@ -84,33 +81,19 @@ class PrependBehaviors
         sprintf(__('*Entry:* [%s](%s)'), $rs->f('post_title'), $rs->getPostURL()) . "\n" .
         sprintf(__('*Comment by:* %s <%s>'), $rs->f('comment_author'), $rs->f('comment_email')) . "\n" ;
 
-        self::sendMessage(My::id() . 'CommentCreate', $message);
-    }
-
-    /**
-     * Message on comment creation.
-     */
-    public static function publicAfterCommentCreate(Cursor $cur, ?int $comment_id): void
-    {
-        self::publicAfterCommentCreateHelper($cur, $comment_id, false);
-    }
-
-    /**
-     * Message on comment creation.
-     */
-    public static function publicAfterCommentCreateNotMe(Cursor $cur, ?int $comment_id): void
-    {
-        self::publicAfterCommentCreateHelper($cur, $comment_id, true);
+        self::sendMessage(My::id() . 'CommentCreate', $message, $rs->f('comment_email'));
+        self::sendMessage(My::id() . 'CommentCreateNotMe', $message, $rs->f('comment_email'));
     }
 
     /**
      * Commons.
      */
-    private static function sendMessage(string $action, string $message): void
+    private static function sendMessage(string $action, string $message, string $origin): void
     {
         $telegram = new Telegram();
         $telegram
             ->setAction($action)
+            ->setOrigin($origin)
             ->setContent($message)
             ->setFormat('markdown')
             ->send();

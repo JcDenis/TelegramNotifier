@@ -30,7 +30,8 @@ class TelegramAction
         public readonly string $type,
         public readonly string $name,
         public readonly string $description,
-        public readonly string $permissions = ''
+        public readonly string $permissions = '',
+        public readonly mixed $condition = null,
     ) {
         if (!in_array($this->type, Telegram::SUPPORTED_TYPES)) {
             throw new Exception(__('Unsupported Telegram message type.'));
@@ -85,10 +86,13 @@ class TelegramAction
 
         if ($rs instanceof MetaRecord) {
             while ($rs->fetch()) {
-                $user = TelegramUser::newFromUser((string) $rs->f('user_id'));
-                // Get only configured users
-                if ($user->isConfigured() && $this->checkUser($user)) {
-                    $res[] = $user;
+                if ((bool) $rs->f('pref_value')) {
+                    // Action enabled for this user
+                    $user = TelegramUser::newFromUser((string) $rs->f('user_id'));
+                    // Get only configured users
+                    if ($user->isConfigured() && $this->checkUser($user)) {
+                        $res[] = $user;
+                    }
                 }
             }
         }
