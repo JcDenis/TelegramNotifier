@@ -13,13 +13,17 @@
  */
 declare(strict_types=1);
 
+if (!isset($this) || !is_object($this) || !method_exists($this, 'registerModule') || !isset($this->id) || !is_string($this->id)) {
+    return;
+}
+
 $this->registerModule(
     'Telegram Notifier',
     'Receive blog updates on Telegram.',
     'Jean-Christian Paul Denis and Contributors',
     '0.5.1',
     [
-        'requires'    => [['core', '2.36']],
+        'requires'    => [['core', '2.39']],
         'settings'    => ['pref' => '#user-options.' . $this->id . '_prefs'],
         'permissions' => 'My',
         'type'        => 'plugin',
