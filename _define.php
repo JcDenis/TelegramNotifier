@@ -21,7 +21,7 @@ $this->registerModule(
     'Telegram Notifier',
     'Receive blog updates on Telegram.',
     'Jean-Christian Paul Denis and Contributors',
-    '0.5.1',
+    '0.6',
     [
         'requires'    => [['core', '2.39']],
         'settings'    => ['pref' => '#user-options.' . $this->id . '_prefs'],
