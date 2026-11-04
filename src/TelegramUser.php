@@ -67,7 +67,7 @@ class TelegramUser
             if ($rs instanceof MetaRecord) {
                 while ($rs->fetch()) {
                     if (!in_array($rs->f('pref_id'), Telegram::CONFIGURATION_KEYS) && (bool) $rs->f('pref_value')) {
-                        $this->actions[] = trim((string) $rs->f('pref_id'));
+                        $this->actions[] = trim($rs->strField('pref_id'));
                     }
                 }
             }
@@ -79,13 +79,10 @@ class TelegramUser
                 $this->admin = $rs->admin() !== '';
 
                 // Get all possible user emails
-                $this->emails[] = $rs->user_email;
-                $user_prefs     = App::userPreferences()->createFromUser((string) $rs->user_id, 'profile');
-                if ((string) $user_prefs->profile->mails !== '') {
-                    $emails = array_map(trim(...), explode(',', (string) $user_prefs->profile->mails));
-                    if ($emails !== []) {
-                        $this->emails = array_merge($this->emails, $emails);
-                    }
+                $this->emails[] = $rs->strField('user_email');
+                $mails          = App::userPreferences()->createFromUser($rs->strField('user_id'), 'profile')->get('profile')->get('mails');
+                if (is_string($mails) && $mails !== '') {
+                    $this->emails = array_merge($this->emails, array_map(trim(...), explode(',', $mails)));
                 }
             }
         }
@@ -163,8 +160,8 @@ class TelegramUser
     public function setForm(): void
     {
         if (App::auth()->userID() == $this->user) {
-            $chat  = (int) $_POST[My::id() . 'chat'] ?: 0;
-            $token = (string) $_POST[My::id() . 'token'] ?: '';
+            $chat  = is_numeric($_POST[My::id() . 'chat'] ?? '') ? (int) $_POST[My::id() . 'chat'] : 0;
+            $token = is_string($_POST[My::id() . 'token'] ?? null) ? $_POST[My::id() . 'token'] : '';
 
             if ($chat !== $this->chat || $token !== $this->token) {
                 // Test config
@@ -213,12 +210,12 @@ class TelegramUser
         if ($rs instanceof MetaRecord) {
             while ($rs->fetch()) {
                 if (in_array($rs->f('pref_id'), Telegram::CONFIGURATION_KEYS)) {
-                    $name  = trim((string) $rs->f('pref_id'));
+                    $name  = trim($rs->strField('pref_id'));
                     $value = $rs->f('pref_value');
                     $type  = $rs->f('pref_type');
 
                     if ($type === UserWorkspaceInterface::WS_ARRAY) {
-                        $value = @json_decode((string) $value, true);
+                        $value = @json_decode(is_string($value) ? $value : '', true);
                     } elseif ($type === UserWorkspaceInterface::WS_FLOAT || $type === UserWorkspaceInterface::WS_DOUBLE) {
                         $type = UserWorkspaceInterface::WS_FLOAT;
                     } elseif ($type !== UserWorkspaceInterface::WS_BOOL && $type !== UserWorkspaceInterface::WS_INT) {

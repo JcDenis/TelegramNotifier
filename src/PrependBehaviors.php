@@ -6,6 +6,7 @@ namespace Dotclear\Plugin\TelegramNotifier;
 
 use Dotclear\App;
 use Dotclear\Database\Cursor;
+use Dotclear\Database\MetaRecord;
 
 /**
  * @brief       TelegramNotifier default actions.
@@ -58,7 +59,7 @@ class PrependBehaviors
     public static function publicAfterCommentCreate(Cursor $cur, ?int $comment_id): void
     {
         // skip unwanted message
-        if (!App::blog()->isDefined() || (int) $cur->getField('comment_status') === App::status()->comment()::JUNK) {
+        if (!App::blog()->isDefined() || (is_numeric($status = $cur->getField('comment_status')) ? (int) $status : 0) === App::status()->comment()::JUNK) {
             return;
         }
 
@@ -71,18 +72,20 @@ class PrependBehaviors
 
         App::frontend()->context()->preview = $current_preview;
 
-        if (is_null($rs) || $rs->isEmpty()) {
+        if (!$rs instanceof MetaRecord || $rs->isEmpty()) {
             return;
         }
+
+        $url = $rs->__call('getPostURL', []);
 
         $message = sprintf('*%s*', __('New comment')) . "\n" .
         "-- \n" .
         sprintf(__('*Blog:* %s'), App::blog()->name()) . "\n" .
-        sprintf(__('*Entry:* [%s](%s)'), $rs->f('post_title'), $rs->getPostURL()) . "\n" .
-        sprintf(__('*Comment by:* %s <%s>'), $rs->f('comment_author'), $rs->f('comment_email')) . "\n" ;
+        sprintf(__('*Entry:* [%s](%s)'), $rs->strField('post_title'), is_string($url) ? $url : '') . "\n" .
+        sprintf(__('*Comment by:* %s <%s>'), $rs->strField('comment_author'), $rs->strField('comment_email')) . "\n" ;
 
-        self::sendMessage(My::id() . 'CommentCreate', $message, $rs->f('comment_email'));
-        self::sendMessage(My::id() . 'CommentCreateNotMe', $message, $rs->f('comment_email'));
+        self::sendMessage(My::id() . 'CommentCreate', $message, $rs->strField('comment_email'));
+        self::sendMessage(My::id() . 'CommentCreateNotMe', $message, $rs->strField('comment_email'));
     }
 
     /**
