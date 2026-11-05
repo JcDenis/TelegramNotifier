@@ -80,9 +80,7 @@ class Telegram
     public function addActions(array $actions): void
     {
         foreach ($actions as $action) {
-            if ($action instanceof TelegramAction) {
-                $this->actions[$action->id] = $action;
-            }
+            $this->actions[$action->id] = $action;
         }
     }
 
@@ -197,8 +195,8 @@ class Telegram
 
             // get bot API response
             $rsp = json_decode((string) $client->getContent(), true);
-            if (!isset($rsp['ok']) || !$rsp['ok']) {
-                throw new Exception($rsp['description'] ?? __('Failed to call Telegram API'));
+            if (!is_array($rsp) || empty($rsp['ok'])) {
+                throw new Exception(is_array($rsp) && is_string($rsp['description'] ?? null) ? $rsp['description'] : __('Failed to call Telegram API'));
             }
         } catch (Exception $exception) {
             if (App::config()->debugMode()) {

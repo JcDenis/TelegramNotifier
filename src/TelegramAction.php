@@ -87,7 +87,7 @@ class TelegramAction
             while ($rs->fetch()) {
                 if ((bool) $rs->f('pref_value')) {
                     // Action enabled for this user
-                    $user = TelegramUser::newFromUser((string) $rs->f('user_id'));
+                    $user = TelegramUser::newFromUser($rs->strField('user_id'));
                     // Get only configured users
                     if ($user->isConfigured() && $this->checkUser($user)) {
                         $res[] = $user;
