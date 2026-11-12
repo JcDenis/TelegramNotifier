@@ -198,9 +198,9 @@ class Telegram
             if (!is_array($rsp) || empty($rsp['ok'])) {
                 throw new Exception(is_array($rsp) && is_string($rsp['description'] ?? null) ? $rsp['description'] : __('Failed to call Telegram API'));
             }
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             if (App::config()->debugMode()) {
-                throw $e;
+                throw $exception;
             }
 
             return false;
