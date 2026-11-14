@@ -8,7 +8,7 @@
     <desc>Receive blog updates on Telegram.</desc>
     <file>https://github.com/JcDenis/TelegramNotifier/releases/download/v0.6/plugin-TelegramNotifier.zip</file>
     <da:dcmin>2.39</da:dcmin>
-    <da:details>https://github.com/JcDenis/TelegramNotifier/src/branch/master/README.md</da:details>
+    <da:details>https://github.com/JcDenis/TelegramNotifier/blob/master/README.md</da:details>
     <da:support>https://github.com/JcDenis/TelegramNotifier/issues</da:support>
   </module>
 </modules>
