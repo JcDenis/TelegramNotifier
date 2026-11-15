@@ -12,6 +12,8 @@ _TelegramNotifier_ is a plugin for the open-source web publishing software calle
 
 > Receive blog updates on Telegram.
 
+A [user guide in French](https://github.com/JcDenis/TelegramNotifier/blob/master/docs/fr/utilisation.md) is available.
+
 ## REQUIREMENTS
 
 * Dotclear 2.39
@@ -34,6 +36,7 @@ More:
 
 ## LINKS
 
+* [User guide (in French)](https://github.com/JcDenis/TelegramNotifier/blob/master/docs/fr/utilisation.md)
 * [License](https://github.com/JcDenis/TelegramNotifier/blob/master/LICENSE)
 * [Packages & details](https://github.com/JcDenis/TelegramNotifier/releases) (or on [Repository](https://dotclear.org/plugin/detail/TelegramNotifier))
 * [Sources & contributions](https://github.com/JcDenis/TelegramNotifier)
