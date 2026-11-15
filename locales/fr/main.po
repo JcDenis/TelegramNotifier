@@ -38,7 +38,7 @@ msgstr "Envoyer un message pour les nouveaux commentaires, sauf les miens"
 
 #, php-format
 msgid "Blog:"
-msgstr "Blog :"
+msgstr "Blog :"
 
 #, php-format
 msgid "Entry:"
