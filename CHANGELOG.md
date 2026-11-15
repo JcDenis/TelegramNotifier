@@ -1,3 +1,7 @@
+TelegramNotifier 0.7.1 - 2026.11.15
+===========================================================
+* [lang] Do not override core translations
+
 TelegramNotifier 0.7 - 2026.11.15
 ===========================================================
 * Code review (PHPStan/Rector)
