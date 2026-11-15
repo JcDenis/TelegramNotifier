@@ -1,11 +1,6 @@
 TelegramNotifier 0.7 - 2026.11.15
 ===========================================================
-* Update Franck's email
-* Harmonize usage of App::blogWorkspace()::NS_... and App::userWorkspace()::WS_... (and use short version of constant name for types)
-* PHPCode review (PHPStan/Rector)
-* Rector coding style
-* Fix DA URLs
-* Add Claude to contributors
+* Code review (PHPStan/Rector)
 * [fix] Actions shown before configuration, permissions check, Telegram error shown, failures logged, sent after page, HTML escaped messages without visitor email
 * [lang] Updated French translations
 * [docs] Add a user guide in French, with screenshots
