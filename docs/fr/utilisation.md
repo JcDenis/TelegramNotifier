@@ -29,20 +29,20 @@ Il faut deux informations, à obtenir dans Telegram :
 
 ![Le cadre Telegram Notifier dans les préférences](img/preferences-telegram.png)
 
-À l'enregistrement, le plugin interroge Telegram pour vérifier ces valeurs. Si Telegram refuse, le message « Impossible de configurer Telegram » s'affiche et les valeurs ne sont pas gardées.
+À l'enregistrement, le plugin interroge Telegram pour vérifier ces valeurs. Si Telegram refuse, le message « Configuration Telegram non enregistrée : » s'affiche, suivi de la raison donnée par Telegram, et les valeurs ne sont pas gardées.
 
 Chaque utilisateur du blog a ses propres valeurs.
 
 ## Choisir les messages
 
-Les cases n'apparaissent qu'une fois l'ID et le token enregistrés. Il faut donc enregistrer deux fois : d'abord le compte, puis les messages.
-
 Sous « Envoyer un message Telegram pour », cochez ce que vous voulez recevoir :
 
 * « Nouveau commentaire » : tous les nouveaux commentaires ;
-* « Nouveau commentaire (si pas de moi) » : seulement ceux dont l'adresse e-mail n'est pas la vôtre (ni l'une des adresses de votre profil).
+* « Nouveau commentaire (sauf les miens) » : seulement ceux dont l'adresse e-mail n'est pas la vôtre (ni l'une des adresses de votre profil).
 
 Si vous cochez les deux, vous recevrez deux messages par commentaire.
+
+D'autres plugins peuvent ajouter leurs propres messages à cette liste, par exemple « Nouvelle inscription publique » avec FrontendSession.
 
 Les messages envoyés sont réservés aux utilisateurs qui ont une permission de gestion sur le blog (utilisation, publication, suppression ou administration du contenu), ou aux administrateurs.
 
@@ -52,14 +52,16 @@ Le message contient :
 
 * le titre « Nouveau commentaire » ;
 * le nom du blog ;
-* l'entrée commentée, avec un lien ;
-* l'auteur du commentaire et son adresse e-mail.
+* le billet commenté, avec un lien ;
+* le nom de l'auteur du commentaire.
+
+L'adresse e-mail du visiteur n'est jamais envoyée à Telegram.
 
 Le texte du commentaire n'est pas envoyé. Les commentaires classés indésirables ne déclenchent rien.
 
 ## Bon à savoir
 
 * Le token donne le contrôle du bot : ne le partagez pas.
-* Un message qui n'a pas pu partir n'est pas signalé : aucun message d'erreur ni journal. Le mode debug de Dotclear affiche l'erreur.
+* Les messages partent une fois la page du visiteur envoyée : il n'attend pas Telegram. Un message qui n'a pas pu partir est noté dans le journal d'erreurs PHP du serveur.
 * Seuls les commentaires créés depuis le site public déclenchent un message.
 * Le plugin peut être étendu pour d'autres messages : voir le README.
