@@ -50,47 +50,46 @@ class TelegramUser
         public readonly int $chat = 0,
         public readonly string $token = ''
     ) {
-        if ($this->isConfigured()) {
-            // Get user selected actions
-            $sql = new SelectStatement();
-            $sql
-                ->columns([
-                    'pref_id',
-                    'pref_value',
-                ])
-                ->from(App::db()->con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
-                ->and('pref_ws = ' . $sql->quote(My::id()))
-                ->where('user_id = ' . $sql->quote($this->user));
+        if ($this->user === '') {
+            return;
+        }
 
-            $rs = $sql->select();
+        // Get user selected actions
+        $sql = new SelectStatement();
+        $sql
+            ->columns([
+                'pref_id',
+                'pref_value',
+            ])
+            ->from(App::db()->con()->prefix() . UserWorkspaceInterface::WS_TABLE_NAME)
+            ->and('pref_ws = ' . $sql->quote(My::id()))
+            ->where('user_id = ' . $sql->quote($this->user));
 
-            if ($rs instanceof MetaRecord) {
-                while ($rs->fetch()) {
-                    if (!in_array($rs->f('pref_id'), Telegram::CONFIGURATION_KEYS) && (bool) $rs->f('pref_value')) {
-                        $this->actions[] = trim($rs->strField('pref_id'));
-                    }
+        $rs = $sql->select();
+
+        if ($rs instanceof MetaRecord) {
+            while ($rs->fetch()) {
+                if (!in_array($rs->f('pref_id'), Telegram::CONFIGURATION_KEYS) && (bool) $rs->f('pref_value')) {
+                    $this->actions[] = trim($rs->strField('pref_id'));
                 }
             }
+        }
 
-            // Check if user is (super)admin on current blog
-            $rs = App::users()->getUser($this->user);
+        // Check if user is (super)admin on current blog, even before Telegram is configured
+        $rs = App::users()->getUser($this->user);
 
-            if (!$rs->isEmpty()) {
-                $this->admin = $rs->admin() !== '';
+        if (!$rs->isEmpty()) {
+            $this->admin = $rs->admin() !== '';
 
-                // Get all possible user emails
-                $this->emails[] = $rs->strField('user_email');
-                $mails          = App::userPreferences()->createFromUser($rs->strField('user_id'), 'profile')->get('profile')->get('mails');
-                if (is_string($mails) && $mails !== '') {
-                    $this->emails = array_merge($this->emails, array_map(trim(...), explode(',', $mails)));
-                }
+            // Get all possible user emails
+            $this->emails[] = $rs->strField('user_email');
+            $mails          = App::userPreferences()->createFromUser($rs->strField('user_id'), 'profile')->get('profile')->get('mails');
+            if (is_string($mails) && $mails !== '') {
+                $this->emails = array_merge($this->emails, array_map(trim(...), explode(',', $mails)));
             }
         }
     }
 
-    /**
-     * Check if configuration is not empty.
-     */
     public function isConfigured(): bool
     {
         return $this->user !== '' && $this->chat !== 0 && $this->token !== '';
@@ -164,13 +163,11 @@ class TelegramUser
             $token = is_string($_POST[My::id() . 'token'] ?? null) ? $_POST[My::id() . 'token'] : '';
 
             if ($chat !== $this->chat || $token !== $this->token) {
-                // Test config
+                // Test config, the error from Telegram is given to the user
                 if ($chat !== 0 && $token !== '') {
                     $user     = new self($this->user, $chat, $token);
                     $telegram = new Telegram();
-                    if (!$telegram->query($user, 'getChat', ['chat_id' => $chat])) {
-                        throw new Exception(__('Bad Telegram configuration'));
-                    }
+                    $telegram->queryOrFail($user, 'getChat', ['chat_id' => $chat]);
                 }
 
                 // Save config
@@ -180,9 +177,6 @@ class TelegramUser
         }
     }
 
-    /**
-     * Check if user has selected an action.
-     */
     public function hasAction(string $action): bool
     {
         return in_array($action, $this->actions);

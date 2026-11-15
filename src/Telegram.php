@@ -38,6 +38,11 @@ class Telegram
     public const BOT_API_URL = 'https://api.telegram.org/bot%s/%s';
 
     /**
+     * Bot API call timeout in seconds.
+     */
+    public const TIMEOUT = 5;
+
+    /**
      * Registerded action sstack.
      *
      * @var     array<string, TelegramAction> $actions
@@ -145,35 +150,83 @@ class Telegram
     /**
      * Send telegram.
      */
-    public function send(): void
+    /**
+     * Get users to send content to.
+     *
+     * Database is read here, so it can be called before sending after the page is served.
+     *
+     * @return  array<int, TelegramUser>
+     */
+    public function getRecipients(): array
     {
-        if (!$this->action) {
-            return;
+        $res = [];
+        if (!$this->action || $this->action->type !== 'message' || $this->content === '') {
+            return $res;
         }
 
-        $data = [];
-
-        if ($this->action->type === 'message' && $this->content !== '') {
-            foreach ($this->action->getUsers() as $user) {
-                // If action has a condition, check it
-                if (is_callable($this->action->condition) && !call_user_func($this->action->condition, $user, $this->origin)) {
-                    continue;
-                }
-
-                $data['text'] = $this->content;
-                $this->query($user, 'sendMessage', $data);
+        foreach ($this->action->getUsers() as $user) {
+            // If action has a condition, check it
+            if (is_callable($this->action->condition) && !call_user_func($this->action->condition, $user, $this->origin)) {
+                continue;
             }
+            $res[] = $user;
+        }
+
+        return $res;
+    }
+
+    /**
+     * Send content to users.
+     *
+     * @param   null|array<int, TelegramUser>   $users      The users, or null to get them now
+     * @param   bool                            $log_in_db  Log failures in Dotclear logs (database must be available)
+     */
+    public function send(?array $users = null, bool $log_in_db = true): void
+    {
+        foreach ($users ?? $this->getRecipients() as $user) {
+            $this->query($user, 'sendMessage', ['text' => $this->content], $log_in_db);
         }
     }
 
     /**
-     * Send a telegram message.
-     *
-     * @see https://core.telegram.org/bots/api#responseparameters
+     * Call bot API, failures are logged.
      *
      * @param   array<string, mixed>    $data
      */
-    public function query(TelegramUser $user, string $endpoint, array $data): bool
+    public function query(TelegramUser $user, string $endpoint, array $data, bool $log_in_db = true): bool
+    {
+        try {
+            $this->queryOrFail($user, $endpoint, $data);
+        } catch (Exception $exception) {
+            // Log failure without the bot token
+            $msg = sprintf('Failed to send Telegram %s to user %s: %s', $endpoint, $user->user, $exception->getMessage());
+            if ($log_in_db) {
+                try {
+                    $cur = App::log()->openLogCursor();
+                    $cur->setField('log_table', My::id());
+                    $cur->setField('log_msg', $msg);
+                    App::log()->addLog($cur);
+
+                    return false;
+                } catch (Exception) {
+                }
+            }
+            error_log('TelegramNotifier: ' . $msg);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Call bot API.
+     *
+     * @param   array<string, mixed>    $data
+     *
+     * @throws  Exception   With Telegram error message
+     */
+    public function queryOrFail(TelegramUser $user, string $endpoint, array $data): void
     {
         $data['chat_id'] = $user->chat;
         if ($this->format !== '') {
@@ -183,29 +236,20 @@ class Telegram
         $url  = sprintf(self::BOT_API_URL, $user->token, $endpoint);
         $path = '';
 
-        try {
-            // init bot API
-            $client = HttpClient::initClient($url, $path);
-            if ($client === false) {
-                throw new Exception(__('Failed to init Telegram API'));
-            }
-
-            // call bot API
-            $client->post($path, $data);
-
-            // get bot API response
-            $rsp = json_decode((string) $client->getContent(), true);
-            if (!is_array($rsp) || empty($rsp['ok'])) {
-                throw new Exception(is_array($rsp) && is_string($rsp['description'] ?? null) ? $rsp['description'] : __('Failed to call Telegram API'));
-            }
-        } catch (Exception $exception) {
-            if (App::config()->debugMode()) {
-                throw $exception;
-            }
-
-            return false;
+        // init bot API
+        $client = HttpClient::initClient($url, $path);
+        if ($client === false) {
+            throw new Exception(__('Failed to init Telegram API'));
         }
+        $client->setTimeout(self::TIMEOUT);
 
-        return true;
+        // call bot API
+        $client->post($path, $data);
+
+        // get bot API response
+        $rsp = json_decode((string) $client->getContent(), true);
+        if (!is_array($rsp) || empty($rsp['ok'])) {
+            throw new Exception(is_array($rsp) && is_string($rsp['description'] ?? null) ? $rsp['description'] : __('Failed to call Telegram API'));
+        }
     }
 }

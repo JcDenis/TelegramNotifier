@@ -27,26 +27,23 @@ class BackendBehaviors
      */
     public static function adminBeforeUserUpdate(): void
     {
+        // Get instances
+        $user    = TelegramUser::newFromUser((string) App::auth()->userID());
+        $actions = new Telegram();
+
+        // Save user actions
+        foreach ($actions->getActions() as $action) {
+            $action->setForm($user);
+        }
+
+        // Save user configuration, it is checked with Telegram before
         try {
-            // Get instances
-            $user    = TelegramUser::newFromUser((string) App::auth()->userID());
-            $actions = new Telegram();
-
-            // Save user configuration
             $user->setForm();
-
-            // Save user actions
-            foreach ($actions->getActions() as $action) {
-                $action->setForm($user);
-            }
-        } catch (Exception) {
-            Notices::addWarningNotice(__('Failed to configure Telegram'));
+        } catch (Exception $e) {
+            Notices::addWarningNotice(sprintf(__('Telegram configuration not saved: %s'), $e->getMessage()));
         }
     }
 
-    /**
-     * Display user preferences, color syntax activation and theme selection.
-     */
     public static function adminPreferencesForm(): void
     {
         $user    = TelegramUser::newFromUser((string) App::auth()->userID());

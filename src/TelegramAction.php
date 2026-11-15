@@ -53,7 +53,8 @@ class TelegramAction
         }
 
         // user has required persmission
-        foreach (explode(',', $this->permissions) as $permission) {
+        // Permissions are given as "|perm1|perm2|" (makePermissions()) or "perm1,perm2"
+        foreach (array_filter(preg_split('/[|,]/', $this->permissions) ?: [], fn (string $v): bool => $v !== '') as $permission) {
             if ($user->hasPermission($permission)) {
                 return true;
             }

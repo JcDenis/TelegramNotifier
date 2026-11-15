@@ -7,6 +7,7 @@ namespace Dotclear\Plugin\TelegramNotifier;
 use Dotclear\App;
 use Dotclear\Database\Cursor;
 use Dotclear\Database\MetaRecord;
+use Dotclear\Helper\Html\Html;
 
 /**
  * @brief       TelegramNotifier default actions.
@@ -76,29 +77,40 @@ class PrependBehaviors
             return;
         }
 
-        $url = $rs->__call('getPostURL', []);
+        $url    = $rs->__call('getPostURL', []);
+        $origin = $rs->strField('comment_email');
 
-        $message = sprintf('*%s*', __('New comment')) . "\n" .
+        // Visitor email is not sent to Telegram, only used to know if comment is from user
+        $message = sprintf('<b>%s</b>', Html::escapeHTML(__('New comment'))) . "\n" .
         "-- \n" .
-        sprintf(__('*Blog:* %s'), App::blog()->name()) . "\n" .
-        sprintf(__('*Entry:* [%s](%s)'), $rs->strField('post_title'), is_string($url) ? $url : '') . "\n" .
-        sprintf(__('*Comment by:* %s <%s>'), $rs->strField('comment_author'), $rs->strField('comment_email')) . "\n" ;
+        sprintf('<b>%s</b> %s', Html::escapeHTML(__('Blog:')), Html::escapeHTML(App::blog()->name())) . "\n" .
+        sprintf('<b>%s</b> <a href="%s">%s</a>', Html::escapeHTML(__('Entry:')), Html::escapeHTML(is_string($url) ? $url : ''), Html::escapeHTML($rs->strField('post_title'))) . "\n" .
+        sprintf('<b>%s</b> %s', Html::escapeHTML(__('Comment by:')), Html::escapeHTML($rs->strField('comment_author'))) . "\n";
 
-        self::sendMessage(My::id() . 'CommentCreate', $message, $rs->strField('comment_email'));
-        self::sendMessage(My::id() . 'CommentCreateNotMe', $message, $rs->strField('comment_email'));
-    }
+        // Get recipients now (database is closed after the page), send messages after the visitor page is served
+        $telegrams = [];
+        foreach ([My::id() . 'CommentCreate', My::id() . 'CommentCreateNotMe'] as $action) {
+            $telegram = (new Telegram())
+                ->setAction($action)
+                ->setOrigin($origin)
+                ->setContent($message)
+                ->setFormat('HTML');
+            $users = $telegram->getRecipients();
+            if ($users !== []) {
+                $telegrams[] = [$telegram, $users];
+            }
+        }
+        if ($telegrams === []) {
+            return;
+        }
 
-    /**
-     * Commons.
-     */
-    private static function sendMessage(string $action, string $message, string $origin): void
-    {
-        $telegram = new Telegram();
-        $telegram
-            ->setAction($action)
-            ->setOrigin($origin)
-            ->setContent($message)
-            ->setFormat('markdown')
-            ->send();
+        register_shutdown_function(function () use ($telegrams): void {
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            }
+            foreach ($telegrams as [$telegram, $users]) {
+                $telegram->send($users, false);
+            }
+        });
     }
 }
