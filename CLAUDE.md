@@ -29,7 +29,9 @@ Required Dotclear and PHP versions: see `_define.php`.
 
 ## Pitfalls
 
-* None recorded yet: add here the traps met while working on the module.
+* Action permissions come from `makePermissions()` (`|perm1|perm2|`), not a comma separated list.
+* Messages are sent after the visitor page (shutdown), but the core closes the database in its own shutdown function: recipients are read before, and failures there go to the PHP error log.
+* Messages use Telegram HTML format: escape every value. The visitor email is never sent to Telegram.
 
 ## Testing
 
