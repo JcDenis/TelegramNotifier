@@ -17,8 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-msgid "Failed to configure Telegram"
-msgstr "Impossible de configurer Telegram"
 
 msgid "Account:"
 msgstr "Compte :"
@@ -33,22 +31,22 @@ msgid "Send message on new comment"
 msgstr "Envoyer un message pour les nouveaux commentaires"
 
 msgid "New comment (not from me)"
-msgstr "Nouveau commentaire (si pas de moi)"
+msgstr "Nouveau commentaire (sauf les miens)"
 
 msgid "Send message on new comment (if not from me)"
-msgstr "Envoyer un message pour les nouveaux commentaires (si pas de moi)"
+msgstr "Envoyer un message pour les nouveaux commentaires, sauf les miens"
 
 #, php-format
-msgid "*Blog:* %s"
-msgstr "*Blog :* %s"
+msgid "Blog:"
+msgstr "Blog :"
 
 #, php-format
-msgid "*Entry:* [%s](%s)"
-msgstr "*Entrée :* [%s](%s)"
+msgid "Entry:"
+msgstr "Billet :"
 
 #, php-format
-msgid "*Comment by:* %s <%s>"
-msgstr "*Commentaire par :* %s <%s>"
+msgid "Comment by:"
+msgstr "Commentaire de :"
 
 msgid "Failed to init Telegram API"
 msgstr "Impossible d'initialiser l'API Telegram"
@@ -65,5 +63,6 @@ msgstr "ID du chat Telegram :"
 msgid "Telegram bot token:"
 msgstr "Token du bot Telegram :"
 
-msgid "Bad Telegram configuration"
-msgstr "Configuration Telegram incorrecte"
+
+msgid "Telegram configuration not saved: %s"
+msgstr "Configuration Telegram non enregistrée : %s"
