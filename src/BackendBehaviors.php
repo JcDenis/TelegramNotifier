@@ -39,8 +39,8 @@ class BackendBehaviors
         // Save user configuration, it is checked with Telegram before
         try {
             $user->setForm();
-        } catch (Exception $e) {
-            Notices::addWarningNotice(sprintf(__('Telegram configuration not saved: %s'), $e->getMessage()));
+        } catch (Exception $exception) {
+            Notices::addWarningNotice(sprintf(__('Telegram configuration not saved: %s'), $exception->getMessage()));
         }
     }
 
