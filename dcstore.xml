@@ -3,10 +3,10 @@
   <module id="TelegramNotifier">
     <name>Telegram notifier</name>
     <version>0.7.1</version>
-    <date>2026-11-15T15:11:43+00:00</date>
+    <date>2026-11-16T08:33:36+00:00</date>
     <author>Jean-Christian Paul Denis and contributors</author>
     <desc>Receive blog updates on Telegram.</desc>
-    <file>https://github.com/JcDenis/TelegramNotifier/releases/download/v0.7.1/plugin-TelegramNotifier.zip</file>
+    <file>https://github.com/franck-paul/TelegramNotifier/releases/download/v0.7.1/plugin-TelegramNotifier.zip</file>
     <da:dcmin>2.39</da:dcmin>
     <da:details>https://github.com/JcDenis/TelegramNotifier/blob/master/README.md</da:details>
     <da:support>https://github.com/JcDenis/TelegramNotifier/issues</da:support>

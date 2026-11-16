@@ -169,6 +169,7 @@ class Telegram
             if (is_callable($this->action->condition) && !call_user_func($this->action->condition, $user, $this->origin)) {
                 continue;
             }
+
             $res[] = $user;
         }
 
@@ -211,6 +212,7 @@ class Telegram
                 } catch (Exception) {
                 }
             }
+
             error_log('TelegramNotifier: ' . $msg);
 
             return false;
@@ -241,6 +243,7 @@ class Telegram
         if ($client === false) {
             throw new Exception(__('Failed to init Telegram API'));
         }
+
         $client->setTimeout(self::TIMEOUT);
 
         // call bot API

@@ -100,6 +100,7 @@ class PrependBehaviors
                 $telegrams[] = [$telegram, $users];
             }
         }
+
         if ($telegrams === []) {
             return;
         }
@@ -108,6 +109,7 @@ class PrependBehaviors
             if (function_exists('fastcgi_finish_request')) {
                 fastcgi_finish_request();
             }
+
             foreach ($telegrams as [$telegram, $users]) {
                 $telegram->send($users, false);
             }
